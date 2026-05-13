@@ -1,4 +1,7 @@
-# Kuis 2
+# Quiz 2 - DAA
 
-## Yosua Hares - 5025221270
+### Team Member
+| Name           | NRP        | Class     |
+| ---            | ---        | ----------|
+| Yosua Hares | 5025221270 | DAA (F) |
 
