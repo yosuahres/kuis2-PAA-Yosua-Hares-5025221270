@@ -121,6 +121,13 @@ function main() {
       }
       if (e.keyCode === 32) { 
         dijkstraDisplay.nextStep();
+        
+        if (!dijkstraDisplay.isShowingAlgorithm_ && dijkstraDisplay.currentResult_) {
+          
+          if (dijkstraDisplay.currentResult_.path && dijkstraDisplay.currentResult_.path.length > 0) {
+            santa.moveAlongPath(dijkstraDisplay.currentResult_.path);
+          }
+        }
       }
       if (e.keyCode === 8) { 
         dijkstraDisplay.previousStep();
@@ -176,9 +183,8 @@ function main() {
     dijkstraDisplay.displayPath(result);
 
     
-    if (result.path && result.path.length > 0) {
-      santa.moveAlongPath(result.path);
-    }
+    
+    
   }
 
   function resetPuzzle(scene) {
