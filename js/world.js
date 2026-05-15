@@ -8,6 +8,7 @@ class World {
     scene.physics.world.setBounds(
         0, 0, Config.WORLD_WIDTH_PX, Config.WORLD_HEIGHT_PX);
 
+    // Render the floor.
     const floor = scene.add.tileSprite(
         Config.WORLD_WIDTH_PX / 2,
         Config.WORLD_HEIGHT_PX / 2,
@@ -34,7 +35,7 @@ class World {
             Config.WORLD_WIDTH_PX,
             Config.WORLD_WALL_TOP_HEIGHT_PX,
             'walltop'),
-        true);
+        true /* static */);
     topWall.depth = Depths.FLOOR;
 
     const topRightWall = this.scene_.physics.add.sprite(
@@ -60,7 +61,7 @@ class World {
             Config.WORLD_WALL_SIDE_WIDTH_PX,
             Config.WORLD_HEIGHT_PX - Config.WORLD_WALL_TOP_RIGHT_HEIGHT_PX,
             'wallright'),
-        true);
+        true /* static */);
     leftWall.depth = Depths.FLOOR;
     leftWall.flipX = -1;
     
@@ -78,7 +79,7 @@ class World {
             Config.WORLD_WALL_SIDE_WIDTH_PX,
             gapTopY - Config.WORLD_WALL_TOP_RIGHT_HEIGHT_PX,
             'wallright'),
-        true);
+        true /* static */);
     rightWallTop.depth = Depths.FLOOR;
 
     const rightWallBottom = this.scene_.physics.add.existing(
@@ -88,7 +89,7 @@ class World {
             Config.WORLD_WALL_SIDE_WIDTH_PX,
             Config.WORLD_HEIGHT_PX - gapBottomY,
             'wallright'),
-        true);
+        true /* static */);
     rightWallBottom.depth = Depths.FLOOR;
 
     this.addObstacleSprite(rightWallTop);
@@ -130,9 +131,46 @@ class World {
     flowers.depth = Depths.OBJECTS;
     flowers.setImmovable(true);
 
+    const counter = this.scene_.physics.add.sprite(310, 140, 'counter');
+    counter.depth = Depths.OBJECTS_IN_FRONT;
+    const counterObstacle = this.scene_.physics.add.sprite(
+        counter.x,
+        counter.y + Config.WORLD_BEHIND_COUNTER_HEIGHT_PX / 2,
+        'crate');
+    counterObstacle.alpha = 0;
+    counterObstacle.displayWidth = counter.displayWidth;
+    counterObstacle.displayHeight = counter.displayHeight
+        - Config.WORLD_BEHIND_COUNTER_HEIGHT_PX;
+    counterObstacle.setImmovable(true);
+
+    const snowWindow = this.scene_.add.sprite(
+        counter.x, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'window');
+    snowWindow.depth = Depths.OBJECTS;
+
+    const fam = this.scene_.add.sprite(
+        counter.x - 83, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'fam');
+    fam.depth = Depths.OBJECTS;
+
+    const hamilton = this.scene_.add.sprite(
+        counter.x - 148, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'hamilton');
+    hamilton.depth = Depths.OBJECTS;
+
+    const acadia = this.scene_.add.sprite(
+        79, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'acadia');
+    acadia.depth = Depths.OBJECTS;
+
+    const liam = this.scene_.add.sprite(
+        counter.x + 87, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'liam');
+    liam.depth = Depths.OBJECTS;
+
+    const bkb = this.scene_.add.sprite(
+        counter.x + 166, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'bkb');
+    bkb.depth = Depths.OBJECTS;
+
     this.addNonResettableObstacleSprite_(piano);
     this.addNonResettableObstacleSprite_(flowers);
     this.addNonResettableObstacleSprite_(bookcase);
+    this.addNonResettableObstacleSprite_(counterObstacle);
   }
 
   addNonResettableObstacleSprite_(sprite) {

@@ -4,9 +4,6 @@ function main() {
     type: Phaser.AUTO,
     width: Config.CAMERA_WIDTH_PX,
     height: Config.CAMERA_HEIGHT_PX,
-    input: {
-      activePointers: 4
-    },
     physics: {
       default: 'arcade'
     },
@@ -17,24 +14,212 @@ function main() {
     }
   };
   const game = new Phaser.Game(config);
-
+  var blockList;
+  var cursorKeys;
+  var directorKeys;
+  var directorState;
+  var gift;
+  var grinch;
+  var instructions;
+  var pathery;
+  var patty;
+  var santa;
+  var victoryCutscene;
   var world;
 
   function preloadFn() {
+    this.load.spritesheet('girl', 'img/patty.png', {
+      frameWidth: Config.PATTY_SPRITE_WIDTH,
+      frameHeight: Config.PATTY_SPRITE_HEIGHT
+    });
+    this.load.spritesheet('santarun', 'img/santarun.png', {
+      frameWidth: Config.SANTA_RUN_SPRITE_WIDTH,
+      frameHeight: Config.SANTA_RUN_SPRITE_HEIGHT
+    });
+    this.load.spritesheet('santadead', 'img/santadead.png', {
+      frameWidth: Config.SANTA_DEAD_SPRITE_WIDTH,
+      frameHeight: Config.SANTA_DEAD_SPRITE_HEIGHT
+    });
+    this.load.spritesheet('grinchrun', 'img/grinchrun.png', {
+      frameWidth: Config.GRINCH_RUN_SPRITE_WIDTH,
+      frameHeight: Config.GRINCH_RUN_SPRITE_HEIGHT
+    });
+    this.load.spritesheet('tree', 'img/tree.png', {
+      frameWidth: Config.TREE_SPRITE_WIDTH,
+      frameHeight: Config.TREE_SPRITE_HEIGHT
+    });
+    this.load.spritesheet('justinblink', 'img/justinblink.png', {
+      frameWidth: Config.JUSTIN_SPRITE_WIDTH,
+      frameHeight: Config.JUSTIN_SPRITE_HEIGHT
+    });
+
+    this.load.image('acadia', 'img/window.png');
+    this.load.image('bkb', 'img/window.png');
     this.load.image('bookcase', 'img/bookcase.png');
+    this.load.image('confetti1', 'img/confetti1.png');
+    this.load.image('confetti2', 'img/confetti2.png');
+    this.load.image('confetti3', 'img/confetti3.png');
+    this.load.image('confetti4', 'img/confetti4.png');
+    this.load.image('confetti5', 'img/confetti5.png');
+    this.load.image('confetti6', 'img/confetti6.png');
+    this.load.image('confetti7', 'img/confetti7.png');
+    this.load.image('counter', 'img/crate.png');
+    this.load.image('crate', 'img/crate.png');
+    this.load.image('fireplace', 'img/fireplace.png');
     this.load.image('flowers', 'img/flowers.png');
+    this.load.image('gift', 'img/gift.png');
+    this.load.image('glow', 'img/glow.png');
+    this.load.image('grinchfaint', 'img/grinchfaint.png');
+    this.load.image('hamilton', 'img/window.png');
+    this.load.image('heart', 'img/heart.png');
+    this.load.image('liam', 'img/window.png');
+    this.load.image('pathmarker', 'img/pathmarker.png');
     this.load.image('piano', 'img/piano.png');
+    this.load.image('rugleft', 'img/rugleft.png');
+    this.load.image('rugmiddle', 'img/rugmiddle.png');
+    this.load.image('rugtop', 'img/rugtop.png');
+    this.load.image('rugtopleft', 'img/rugtopleft.png');
+    this.load.image('fam', 'img/window.png');
     this.load.image('wallright', 'img/wallright.png');
     this.load.image('walltop', 'img/walltop.png');
     this.load.image('walltopright', 'img/walltopright.png');
     this.load.image('wood', 'img/wood.png');
+    this.load.image('welcome', 'img/welcome.png');
+    this.load.image('window', 'img/window.png');
   }
 
   function createFn() {
+    cursorKeys = this.input.keyboard.createCursorKeys();
+    directorKeys = this.input.keyboard.addKeys('space');
+
+    directorState = new DirectorState(directorKeys);
     world = new World(this);
+    grid = new Grid(this, world);
+    pathery = new Pathery(world, grid);
+    blockList = new BlockList(this, world, grid, directorState);
+    santa = new Santa(this, grid, directorState);
+    grinch = new Grinch(this, grid, directorState);
+    patty = new Patty(this, world, grid, cursorKeys);
+    gift = new Gift(this, grid);
+    director = new Director(
+        this, grid, pathery, santa, grinch, gift, directorState);
+    victoryCutscene = new VictoryCutscene(
+        this,
+        patty,
+        gift,
+        directorState,
+        [
+          'confetti1',
+          'confetti2',
+          'confetti3',
+          'confetti4',
+          'confetti5',
+          'confetti6',
+          'confetti7'
+        ]);
+    instructions = new Instructions(this);
+
+    this.input.keyboard.on('keydown', function(e) {
+      if (e.keyCode == Config.DIRECTOR_PRODUCTION_RUNNING_KEY_CODE) {
+        director.toggleProductionRunning();
+      }
+      if (e.keyCode == Config.RESET_KEY_CODE) {
+        // resetWithPresetPuzzle(this);
+      }
+      if (e.keyCode == Config.TOGGLE_INSTRUCTIONS_KEY_CODE) {
+        instructions.toggleVisibility();
+      }
+    });
+
+    resetWithPresetPuzzle(this /* scene */);
   }
 
   function updateFn() {
+    blockList.update(patty.getSprite(), cursorKeys);
+    // Patty must move after checking for collisions to allow other sprites to
+    // check for overlaps on the next update.
+    world.checkCollisions(patty.getSprite());
+
+    patty.update();
+    santa.update();
+    grinch.update();
+    gift.update();
+    victoryCutscene.update();
+  }
+
+  function resetWithPresetPuzzle(scene) {
+    if (directorState.isVictorious()) {
+      // Don't reset if we're victorious.
+      return;
+    }
+    resetPuzzle(
+        scene,
+        4 /* startY */,
+        1 /* endY */,
+        6 /* targetX */,
+        1 /* targetY */,
+        3 /* pattyX */,
+        4 /* pattyY */,
+        40 /* grinchMaxStamina */);
+  }
+
+  function resetPuzzle(
+      scene, startY, endY, targetX, targetY, pattyX, pattyY, grinchMaxStamina) {
+    world.reset();
+    grid.reset(startY, endY, {x: targetX, y: targetY});
+    
+    const rightWallGapCenter = grid.getTileCenter(0, endY);
+    world.renderRightWall(
+        rightWallGapCenter.y - Config.GRID_TILE_SIZE_PX / 2,
+        rightWallGapCenter.y + Config.GRID_TILE_SIZE_PX / 2);
+    blockList.reset();
+    blockList.addBlockInGrid(1, 2, 'crate');
+    blockList.addBlockInGrid(2, 4, 'crate');
+    blockList.addBlockInGrid(4, 6, 'crate');
+    blockList.addBlockInGrid(7, 1, 'crate');
+    blockList.addBlockInGrid(7, 2, 'crate');
+    blockList.addBlockInGrid(8, 5, 'crate');
+    blockList.addBlockInGrid(9, 4, 'crate');
+
+    createBlinkAnimation(scene, 'justinBlinking');
+    const justin = blockList.addBlockOffGrid(
+        0, -1, 'justinblink', 'justinBlinking');
+
+    santa.hide();
+    grinch.reset(grinchMaxStamina);
+    gift.hide();
+    director.reset();
+    patty.reset(justin);
+
+    const pattyBounds = patty.getSprite().getBounds();
+    if (world.anyObstacleInRegion(
+        pattyBounds.centerX,
+        pattyBounds.centerY,
+        pattyBounds.width,
+        pattyBounds.height)) {
+      patty.teleportTo(pattyX, pattyY);
+    }
+  }
+
+  function createBlinkAnimation(scene, animationKey) {
+    const frames = [];
+    for (var i = 0; i < Config.JUSTIN_BLINKING_RATIO; i++) {
+      frames.push({
+        key: 'justinblink',
+        frame: 0
+      });
+    }
+    frames.push({
+      key: 'justinblink',
+      frame: 1
+    });
+
+    scene.anims.create({
+      key: 'justinBlinking',
+      frames: frames,
+      frameRate: Config.JUSTIN_BLINKING_SPEED,
+      repeat: -1
+    });
   }
 }
 
