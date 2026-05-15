@@ -1,6 +1,6 @@
 class DirectorState {
   constructor(directorKeys) {
-    this.directorKeys_ = directorKeys;
+    this.directorKeys_ = directorKeys || {};
     this.isProductionRunning_ = false;
     this.isVictorious_ = false;
   }
@@ -22,8 +22,11 @@ class DirectorState {
   }
 
   getRunnerTimeScale() {
-    return this.directorKeys_.space.isDown
-        ? Config.GRID_RUNNER_FAST_MULTIPLIER
-        : 1;
+    if (this.directorKeys_ && this.directorKeys_.space) {
+      return this.directorKeys_.space.isDown
+          ? Config.GRID_RUNNER_FAST_MULTIPLIER
+          : 1;
+    }
+    return 1;
   }
 }

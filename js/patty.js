@@ -15,13 +15,14 @@ class Patty {
     this.heartTimer_ = 0;
     this.standAnimation_ = 'standDown';
     this.justin_ = null;
-
-    this.createAnimations_();
   }
 
   reset(justin) {
     this.heartTimer_ = 0;
-    this.justin_ = justin;
+    // Always allow movement - justin is optional
+    this.justin_ = justin !== undefined ? justin : this.sprite_;
+    this.sprite_.setVelocityX(0);
+    this.sprite_.setVelocityY(0);
   }
 
   teleportTo(tileX, tileY) {

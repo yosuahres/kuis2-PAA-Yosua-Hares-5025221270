@@ -66,4 +66,24 @@ class Santa {
   update() {
     this.gridRunner_.update();
   }
+
+  reset() {
+    this.hide();
+    this.runSprite_.visible = false;
+    this.deadSprite_.visible = false;
+  }
+
+  teleportTo(tileX, tileY) {
+    const center = this.gridRunner_.grid_.getTileCenter(tileX, tileY);
+    this.runSprite_.x = center.x;
+    this.runSprite_.y = center.y;
+    this.runSprite_.visible = true;
+  }
+
+  moveAlongPath(path) {
+    if (path && path.length > 1) {
+      const formattedPath = path.map(tile => ({ tile: tile }));
+      this.run(formattedPath);
+    }
+  }
 }

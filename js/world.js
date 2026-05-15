@@ -8,7 +8,6 @@ class World {
     scene.physics.world.setBounds(
         0, 0, Config.WORLD_WIDTH_PX, Config.WORLD_HEIGHT_PX);
 
-    // Render the floor.
     const floor = scene.add.tileSprite(
         Config.WORLD_WIDTH_PX / 2,
         Config.WORLD_HEIGHT_PX / 2,
@@ -97,80 +96,6 @@ class World {
   }
 
   renderObjects_() {
-    const pianoWidth = Config.WORLD_PIANO_WIDTH_PX * Config.WORLD_PIANO_SCALE;
-    const pianoHeight = Config.WORLD_PIANO_HEIGHT_PX * Config.WORLD_PIANO_SCALE;
-    const piano = this.scene_.physics.add.sprite(
-        Config.WORLD_WALL_SIDE_WIDTH_PX + pianoWidth / 2,
-        200,
-        'piano');
-    piano.displayWidth = pianoWidth;
-    piano.displayHeight = pianoHeight;
-    piano.depth = Depths.OBJECTS;
-    piano.setImmovable(true);
-
-    const bookcaseWidth = Config.WORLD_BOOKCASE_WIDTH_PX
-        * Config.WORLD_BOOKCASE_SCALE;
-    const bookcaseHeight = Config.WORLD_BOOKCASE_HEIGHT_PX
-        * Config.WORLD_BOOKCASE_SCALE;
-    const bookcase = this.scene_.physics.add.sprite(
-        Config.WORLD_WIDTH_PX - Config.WORLD_WALL_SIDE_WIDTH_PX
-            - bookcaseWidth / 2,
-        100,
-        'bookcase');
-    bookcase.displayWidth = bookcaseWidth;
-    bookcase.displayHeight = bookcaseHeight;
-    bookcase.depth = Depths.OBJECTS;
-    bookcase.setImmovable(true);
-
-    const flowers = this.scene_.physics.add.sprite(
-        bookcase.x - bookcase.displayWidth / 2
-            - Config.WORLD_FLOWERS_WIDTH_PX / 2 - 10,
-        bookcase.y + bookcase.displayHeight / 2
-            - Config.WORLD_FLOWERS_HEIGHT_PX / 2,
-        'flowers');
-    flowers.depth = Depths.OBJECTS;
-    flowers.setImmovable(true);
-
-    const counter = this.scene_.physics.add.sprite(310, 140, 'counter');
-    counter.depth = Depths.OBJECTS_IN_FRONT;
-    const counterObstacle = this.scene_.physics.add.sprite(
-        counter.x,
-        counter.y + Config.WORLD_BEHIND_COUNTER_HEIGHT_PX / 2,
-        'crate');
-    counterObstacle.alpha = 0;
-    counterObstacle.displayWidth = counter.displayWidth;
-    counterObstacle.displayHeight = counter.displayHeight
-        - Config.WORLD_BEHIND_COUNTER_HEIGHT_PX;
-    counterObstacle.setImmovable(true);
-
-    const snowWindow = this.scene_.add.sprite(
-        counter.x, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'window');
-    snowWindow.depth = Depths.OBJECTS;
-
-    const fam = this.scene_.add.sprite(
-        counter.x - 83, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'fam');
-    fam.depth = Depths.OBJECTS;
-
-    const hamilton = this.scene_.add.sprite(
-        counter.x - 148, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'hamilton');
-    hamilton.depth = Depths.OBJECTS;
-
-    const acadia = this.scene_.add.sprite(
-        79, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'acadia');
-    acadia.depth = Depths.OBJECTS;
-
-    const liam = this.scene_.add.sprite(
-        counter.x + 87, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'liam');
-    liam.depth = Depths.OBJECTS;
-
-    const bkb = this.scene_.add.sprite(
-        counter.x + 166, Config.WORLD_WALL_TOP_HEIGHT_PX / 2, 'bkb');
-    bkb.depth = Depths.OBJECTS;
-
-    this.addNonResettableObstacleSprite_(piano);
-    this.addNonResettableObstacleSprite_(flowers);
-    this.addNonResettableObstacleSprite_(bookcase);
-    this.addNonResettableObstacleSprite_(counterObstacle);
   }
 
   addNonResettableObstacleSprite_(sprite) {
